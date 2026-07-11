@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Datos pesados (usar Git LFS para archivos grandes)
+data/01_raw/*
+!data/01_raw/.gitkeep
+data/02_intermediate/*
+!data/02_intermediate/.gitkeep
+data/03_primary/*
+!data/03_primary/.gitkeep
+data/04_model_output/*
+!data/04_model_output/.gitkeep
+
+# Modelos entrenados (opcional: versionar con LFS)
+models/*.pkl
+
+# Credenciales y secretos
+.env
+.env.*
+*.pem
+credentials.json
+secrets/
+
+# IDE y sistema
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Reportes generados (mantener estructura)
+reports/figures/*.png
+reports/reporte_final.pdf
+
+# Temporales
+*.log
+*.tmp
+~$*
