@@ -1,4 +1,4 @@
-# GitLab CI — alternativa a GitHub Actions
+# GitLab CI — ColombIA Datos (Equipo 194)
 
 stages:
   - test
@@ -9,8 +9,17 @@ variables:
 cache:
   paths:
     - .cache/pip
+    - src/node_modules/
 
-test:
+web:
+  stage: test
+  image: node:20
+  script:
+    - cd src
+    - npm ci
+    - npm run lint
+
+python:
   stage: test
   image: python:3.11
   before_script:

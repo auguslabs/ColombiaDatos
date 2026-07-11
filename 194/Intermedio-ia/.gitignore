@@ -52,3 +52,8 @@ reports/reporte_final.pdf
 *.log
 *.tmp
 ~$*
+
+# Node.js — aplicación web en src/
+src/node_modules/
+src/dist/
+src/.env.local

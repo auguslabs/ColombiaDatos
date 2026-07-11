@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from sklearn.ensemble import RandomForestClassifier
 
-from src.model_training import train_ensemble
+from ml.model_training import train_ensemble
 
 
 @pytest.fixture

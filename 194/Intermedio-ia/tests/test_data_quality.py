@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from src.data_cleaning import drop_duplicates, fill_missing_numeric
+from ml.data_cleaning import drop_duplicates, fill_missing_numeric
 
 
 @pytest.fixture

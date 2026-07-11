@@ -1,20 +1,58 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# ColombIA Datos — Aplicación web
 
-# Run and deploy your AI Studio app
+Asistente virtual ciudadano para consultar, analizar y visualizar datos abiertos de Colombia ([datos.gov.co](https://www.datos.gov.co/)) mediante lenguaje natural e inteligencia artificial.
 
-This contains everything you need to run your app locally.
+**Equipo 194** — Proyecto Intermedio IA
 
-View your app in AI Studio: https://ai.studio/apps/4e52c179-86d3-4f50-a4e5-031c02821d04
+## Stack
 
-## Run Locally
+| Capa | Tecnología |
+|------|------------|
+| Frontend | React 19, Vite 6, Tailwind CSS v4, Motion, Recharts |
+| Backend | Express, TypeScript, esbuild |
+| IA | Google Gen AI SDK (Gemini) |
+| Datos | Firebase Auth + Cloud Firestore |
 
-**Prerequisites:**  Node.js
+Documentación completa en [`../docs/`](../docs/):
+- [Stack tecnológico](../docs/stack_tecnologico.md)
+- [Arquitectura](../docs/architecture.md)
+- [Variables de entorno](../docs/variables_entorno.md)
+- [Seguridad](../docs/seguridad.md)
 
+## Instalación
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+**Requisitos:** Node.js 18+
+
+```bash
+npm install
+cp .env.example .env.local
+```
+
+Configurar `GEMINI_API_KEY` en `.env.local`. Ver [variables_entorno.md](../docs/variables_entorno.md).
+
+## Ejecución
+
+```bash
+npm run dev      # Desarrollo → http://localhost:3000
+npm run build    # Build producción
+npm start        # Servidor producción
+npm run lint     # Verificación TypeScript
+```
+
+## Estructura
+
+```
+src/
+├── server.ts              # Express + proxy Gemini
+├── src/App.tsx            # UI principal (chat, admin, auth)
+├── src/components/        # DataChart (Recharts)
+├── src/types.ts           # Interfaces TypeScript
+├── firestore.rules        # Reglas de seguridad
+└── security_spec.md       # Especificación de amenazas
+```
+
+Ver [aplicacion_web.md](../docs/aplicacion_web.md) para detalle de cada archivo.
+
+## AI Studio
+
+Prototipo original: https://ai.studio/apps/4e52c179-86d3-4f50-a4e5-031c02821d04
