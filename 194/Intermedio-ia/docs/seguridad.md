@@ -3,7 +3,7 @@
 ## Principios de seguridad
 
 1. **Claves API en servidor:** `GEMINI_API_KEY` solo existe en `server.ts` (Node.js). El frontend nunca la recibe.
-2. **Proxy Express:** Todas las llamadas a Gemini pasan por endpoints del backend (`/api/gemini`, `/api/analyze-context`).
+2. **Proxy Express:** Las llamadas a Gemini pasan por `/api/chat` y `/api/analyze-context`.
 3. **Reglas Firestore:** Acceso basado en roles y propiedad de documentos.
 4. **Autenticación Firebase:** Google OAuth y email/contraseña con verificación.
 

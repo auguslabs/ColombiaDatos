@@ -15,7 +15,7 @@ async function startServer() {
     apiKey: process.env.GEMINI_API_KEY || '',
     httpOptions: {
       headers: {
-        'User-Agent': 'aistudio-build',
+        'User-Agent': 'colombia-datos/1.0',
       }
     }
   });
@@ -254,9 +254,9 @@ async function startServer() {
 
         let msg = "Se ha alcanzado el límite de peticiones por minuto. Por favor, espera unos segundos e intenta de nuevo.";
         if (isDepletedPrepay) {
-          msg = "Los créditos de prepago de la cuenta administradora de Google AI Studio en este proyecto se han agotado. Puedes configurar tu propia clave de la API de Gemini en Ajustes > Secretos del panel superior de la plataforma para continuar sin límites.";
+          msg = "Los créditos de prepago de la cuenta administradora de Gemini se han agotado. Configura tu propia GEMINI_API_KEY en el archivo .env para continuar sin límites.";
         } else if (isDailyLimit) {
-          msg = "Se ha alcanzado el límite diario del plan gratuito nacional (20 consultas diarias). Para continuar interactuando sin límites, puedes configurar tu propia clave en Ajustes > Secretos del panel superior de la plataforma.";
+          msg = "Se ha alcanzado el límite diario del plan gratuito (20 consultas diarias). Para continuar sin límites, configura tu propia GEMINI_API_KEY en el archivo .env.";
         }
 
         return res.status(429).json({ 

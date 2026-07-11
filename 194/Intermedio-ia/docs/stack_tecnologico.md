@@ -43,7 +43,7 @@ El sitio está construido sobre un entorno **full-stack moderno, veloz y seguro*
 | **Firebase Auth** | Autenticación de usuarios (Google OAuth, email/contraseña). |
 | **Cloud Firestore** | Base de datos NoSQL en tiempo real. Almacena historial de consultas, reportes guardados, fuentes de datos y configuraciones. |
 
-**Archivos clave:** `src/server.ts` (Gemini), `src/firestore.rules`, `src/firebase-applet-config.json`
+**Archivos clave:** `src/server.ts`, `src/firestore.rules`, `src/firebase-config.json`, `src/public/logo_colombia_datos.svg`
 
 ---
 

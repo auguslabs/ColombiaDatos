@@ -1,96 +1,66 @@
 # Guía de validación para pares
 
-Guía para que evaluadores reproduzcan y validen los resultados del proyecto **ColombIA Datos** (Equipo 194).
+Guía para evaluar **ColombIA Datos — Portal de Inteligencia Pública** (Equipo 194).
 
-## Requisitos previos
+## Requisitos
 
 - Node.js 18+
 - Python 3.11+
-- Clave `GEMINI_API_KEY` (Google AI Studio)
+- `GEMINI_API_KEY` (API Gemini)
 
-## 1. Validar la aplicación web
+## 1. Aplicación web
 
 ```bash
 cd src
 npm install
-cp .env.example .env.local
-# Editar .env.local → agregar GEMINI_API_KEY
+cp .env.example .env
+# GEMINI_API_KEY en .env
 npm run dev
 ```
 
-Abrir `http://localhost:3000` y verificar:
+Verificar en `http://localhost:3000`:
 
-- [ ] La página carga con el mensaje de bienvenida de ColombIA Datos
-- [ ] Se puede iniciar sesión (Google o email)
-- [ ] Una consulta en lenguaje natural devuelve respuesta con datos de datos.gov.co
-- [ ] Si la respuesta incluye datos numéricos, aparece un gráfico interactivo (Recharts)
-- [ ] El historial de conversación se guarda al recargar la página
-
-### Verificación TypeScript
+- [ ] Título: "ColombIA Datos - Portal de Inteligencia Pública"
+- [ ] Logo y favicon visibles (`public/logo_colombia_datos.svg`)
+- [ ] Login Firebase (Google o email)
+- [ ] Chat responde consultas sobre datos.gov.co
+- [ ] Gráficos Recharts cuando hay datos numéricos
+- [ ] Catálogo Nacional de fuentes SODA accesible
+- [ ] Historial de conversación persiste al recargar
 
 ```bash
-cd src
-npm run lint
+npm run lint   # TypeScript OK
 ```
 
-## 2. Validar seguridad
+## 2. API backend
 
-- [ ] `GEMINI_API_KEY` no aparece en el código fuente del frontend (`src/src/`)
-- [ ] Revisar `src/firestore.rules` — reglas de acceso por rol
-- [ ] Revisar `docs/seguridad.md` y `src/security_spec.md`
+- [ ] `POST /api/chat` — respuestas del asistente
+- [ ] `POST /api/analyze-context` — objetivos y chips de atajos
+- [ ] `GEMINI_API_KEY` no expuesta en código frontend
 
-## 3. Validar capa analítica Python
+## 3. Seguridad
+
+- [ ] Revisar `src/firestore.rules`
+- [ ] Revisar `docs/seguridad.md`
+
+## 4. Capa analítica Python
 
 ```bash
-# Desde la raíz Intermedio-ia/
 pip install -r requirements.txt
 pytest tests/ -v
 python pipelines/pipeline_ml.py
 ```
 
-Verificar:
+## 5. Documentación
 
-- [ ] Todos los tests pasan (`test_data_quality`, `test_model_inference`)
-- [ ] Pipeline ejecuta (modo esqueleto si no hay CSV en `data/02_intermediate/`)
-
-## 4. Validar documentación
-
-| Documento | Verificar |
-|-----------|-----------|
-| [README.md](../README.md) | Ficha técnica completa |
-| [architecture.md](architecture.md) | Diagrama de flujo coherente con el código |
-| [stack_tecnologico.md](stack_tecnologico.md) | Stack del arquitecto documentado |
-| [aplicacion_web.md](aplicacion_web.md) | Estructura de `src/` explicada |
-| [data_dictionary.md](data_dictionary.md) | Entidades Firestore definidas |
-| [fuentes_datos.md](fuentes_datos.md) | datos.gov.co y SODA documentados |
-| [planteamiento_problema.md](planteamiento_problema.md) | Problema y objetivos claros |
-
-## 5. Validar estructura del repositorio
-
-```
-Intermedio-ia/
-├── src/           ✓ App web (React + Express + Gemini + Firebase)
-├── ml/            ✓ Módulos Python analíticos
-├── docs/          ✓ 10+ documentos técnicos
-├── data/          ✓ 4 subcarpetas del ciclo de vida
-├── notebooks/     ✓ 5 notebooks
-├── tests/         ✓ Pruebas pytest
-├── pipelines/     ✓ pipeline_ml.py
-├── models/        ✓ Carpeta de artefactos
-├── reports/       ✓ Figuras y reporte
-├── RECURSOS/      ✓ Material visual
-└── .github/       ✓ CI configurado
-```
+- [ ] [README.md](../README.md) — ficha técnica actualizada
+- [ ] [architecture.md](architecture.md) — endpoints `/api/chat`
+- [ ] [aplicacion_web.md](aplicacion_web.md) — estructura `public/`, `src/`
+- [ ] [despliegue_local.md](despliegue_local.md) — guía de instalación
 
 ## Checklist final
 
-- [ ] App web funcional con consulta IA
-- [ ] Visualizaciones Recharts operativas
+- [ ] Portal funcional con IA y visualizaciones
 - [ ] Tests Python pasan
-- [ ] Documentación completa y alineada con el código
-- [ ] Sin credenciales expuestas en el repositorio
-- [ ] Estructura del concurso cumplida
-
-## Contacto
-
-Equipo **194** — Proyecto Intermedio IA, Concurso Datos al Ecosistema 2026 IA para Colombia.
+- [ ] Documentación alineada con código actual
+- [ ] Sin credenciales en el repositorio

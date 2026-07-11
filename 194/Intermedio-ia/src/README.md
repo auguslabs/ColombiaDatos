@@ -1,58 +1,35 @@
 # ColombIA Datos — Aplicación web
 
-Asistente virtual ciudadano para consultar, analizar y visualizar datos abiertos de Colombia ([datos.gov.co](https://www.datos.gov.co/)) mediante lenguaje natural e inteligencia artificial.
+**Portal de Inteligencia Pública** para veeduría ciudadana y análisis de datos abiertos de Colombia.
 
-**Equipo 194** — Proyecto Intermedio IA
+Stack: React 19 · Vite 6 · Tailwind CSS v4 · Express · Gemini · Firebase
 
-## Stack
-
-| Capa | Tecnología |
-|------|------------|
-| Frontend | React 19, Vite 6, Tailwind CSS v4, Motion, Recharts |
-| Backend | Express, TypeScript, esbuild |
-| IA | Google Gen AI SDK (Gemini) |
-| Datos | Firebase Auth + Cloud Firestore |
-
-Documentación completa en [`../docs/`](../docs/):
-- [Stack tecnológico](../docs/stack_tecnologico.md)
-- [Arquitectura](../docs/architecture.md)
-- [Variables de entorno](../docs/variables_entorno.md)
-- [Seguridad](../docs/seguridad.md)
-
-## Instalación
-
-**Requisitos:** Node.js 18+
+## Inicio rápido
 
 ```bash
 npm install
-cp .env.example .env.local
+cp .env.example .env
+# Editar .env → GEMINI_API_KEY=...
+npm run dev
 ```
 
-Configurar `GEMINI_API_KEY` en `.env.local`. Ver [variables_entorno.md](../docs/variables_entorno.md).
+Abrir `http://localhost:3000`
 
-## Ejecución
+## Comandos
 
-```bash
-npm run dev      # Desarrollo → http://localhost:3000
-npm run build    # Build producción
-npm start        # Servidor producción
-npm run lint     # Verificación TypeScript
-```
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Desarrollo con hot reload |
+| `npm run build` | Build producción (`dist/`) |
+| `npm start` | Servidor producción |
+| `npm run lint` | Verificación TypeScript |
 
-## Estructura
+## Documentación
 
-```
-src/
-├── server.ts              # Express + proxy Gemini
-├── src/App.tsx            # UI principal (chat, admin, auth)
-├── src/components/        # DataChart (Recharts)
-├── src/types.ts           # Interfaces TypeScript
-├── firestore.rules        # Reglas de seguridad
-└── security_spec.md       # Especificación de amenazas
-```
+Guía completa en [`../docs/`](../docs/):
 
-Ver [aplicacion_web.md](../docs/aplicacion_web.md) para detalle de cada archivo.
-
-## AI Studio
-
-Prototipo original: https://ai.studio/apps/4e52c179-86d3-4f50-a4e5-031c02821d04
+- [Despliegue local](../docs/despliegue_local.md)
+- [Aplicación web](../docs/aplicacion_web.md)
+- [Variables de entorno](../docs/variables_entorno.md)
+- [Arquitectura](../docs/architecture.md)
+- [Seguridad](../docs/seguridad.md)

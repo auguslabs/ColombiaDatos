@@ -2,19 +2,19 @@
 
 ## Contexto
 
-Colombia cuenta con un ecosistema robusto de **datos abiertos** centralizado en [datos.gov.co](https://www.datos.gov.co/), con cientos de conjuntos de datos publicados por entidades del Estado. Sin embargo, el acceso efectivo a esta información sigue siendo un desafío para la ciudadanía:
+Colombia cuenta con un ecosistema robusto de **datos abiertos** en [datos.gov.co](https://www.datos.gov.co/). Sin embargo, ciudadanos, veedores y organizaciones enfrentan barreras para usar esta información en **veeduría ciudadana** y toma de decisiones informadas:
 
-- Los datasets están en formatos técnicos (CSV, JSON, API SODA).
-- Se requiere conocer la estructura de cada conjunto de datos para consultarlo.
-- No existe una interfaz unificada que permita **preguntar en lenguaje natural** y obtener respuestas visualizadas.
+- Datasets en formatos técnicos (CSV, JSON, API SODA).
+- Se requiere conocer la estructura de cada conjunto para consultarlo.
+- No existe una interfaz unificada para **preguntar en lenguaje natural** y obtener respuestas visualizadas.
 
 ## Problema
 
-> ¿Cómo democratizar el acceso a los datos abiertos de Colombia para que cualquier ciudadano pueda consultar, entender y visualizar información pública sin conocimientos técnicos?
+> ¿Cómo democratizar el acceso a los datos abiertos de Colombia para que cualquier ciudadano pueda consultar, entender y visualizar información pública — apoyando la veeduría — sin conocimientos técnicos?
 
-## Solución propuesta — ColombIA Datos
+## Solución — ColombIA Datos (Portal de Inteligencia Pública)
 
-Un **asistente virtual ciudadano** impulsado por inteligencia artificial (Gemini) que:
+Plataforma web con IA (Gemini) que:
 
 1. Interpreta preguntas en español coloquial.
 2. Consulta automáticamente el catálogo de datos.gov.co.
@@ -53,6 +53,6 @@ Democratizar el acceso a los datos abiertos de Colombia mediante una plataforma 
 
 | Perfil | Necesidad |
 |--------|-----------|
-| Ciudadano | Consultar datos públicos sin saber programar |
-| Periodista / investigador | Explorar datasets rápidamente |
-| Administrador | Configurar fuentes y monitorear uso |
+| Ciudadano / veedor | Consultar datos públicos sin saber programar |
+| Periodista / investigador | Explorar datasets y generar visualizaciones rápidas |
+| Administrador | Configurar catálogo SODA, Gemini y monitorear uso |

@@ -1,77 +1,90 @@
 # Aplicación web — estructura de `src/`
 
-La carpeta `src/` contiene la aplicación **ColombIA Datos** exportada desde Google AI Studio y adaptada para el concurso.
+La carpeta `src/` contiene **ColombIA Datos — Portal de Inteligencia Pública**: aplicación full-stack para veeduría ciudadana y consulta de datos abiertos.
 
 ## Árbol de archivos
 
 ```
 src/
-├── server.ts                  # Servidor Express + proxy Gemini
-├── index.html                 # Punto de entrada HTML
-├── vite.config.ts             # Configuración Vite 6
-├── tsconfig.json              # TypeScript
-├── package.json               # Dependencias Node.js
-├── .env.example               # Plantilla de variables de entorno
-├── firestore.rules            # Reglas de seguridad Firestore
+├── server.ts                  # Backend Express + proxy Gemini
+├── index.html                 # HTML (título, favicon)
+├── vite.config.ts             # Vite 6 + Tailwind CSS v4
+├── tsconfig.json
+├── package.json
+├── .env.example
+├── firestore.rules            # Reglas Firestore
 ├── security_spec.md           # Especificación de amenazas
-├── firebase-applet-config.json
-├── metadata.json              # Metadatos del applet AI Studio
-└── src/                       # Código fuente React
-    ├── main.tsx               # Bootstrap de React
-    ├── App.tsx                # Componente principal (~5000 líneas)
+├── firebase-config.json       # Firebase por defecto (desarrollo)
+├── firebase-blueprint.json    # Blueprint de infraestructura Firebase
+├── metadata.json              # Metadatos del proyecto
+├── public/                    # Assets estáticos
+│   ├── favicon.svg
+│   └── logo_colombia_datos.svg
+└── src/                       # Código React
+    ├── main.tsx
+    ├── App.tsx                # UI principal (~4900 líneas)
     ├── types.ts               # Interfaces TypeScript
-    ├── index.css              # Estilos Tailwind v4
+    ├── index.css              # Tailwind v4
     └── components/
-        └── DataChart.tsx      # Gráficos Recharts interactivos
+        └── DataChart.tsx      # Gráficos Recharts
 ```
 
-## Responsabilidades por archivo
+## Backend — `server.ts`
 
-### `server.ts` — Backend
+| Endpoint | Método | Función |
+|----------|--------|---------|
+| `/api/chat` | POST | Chat con Gemini (modelo configurable, default `gemini-3.5-flash`) |
+| `/api/analyze-context` | POST | Análisis de contexto conversacional + chips de atajos |
 
-- Servidor Express en puerto **3000**.
-- Endpoints protegidos para llamadas a **Gemini** (`/api/gemini`, `/api/analyze-context`).
-- **Circuit breaker** ante límites de cuota de la API.
-- En desarrollo, integra Vite como middleware para HMR.
-- En producción, sirve el build estático desde `dist/`.
+Características del servidor:
 
-### `src/App.tsx` — Frontend principal
+- **Proxy seguro** — `GEMINI_API_KEY` solo en servidor
+- **Circuit breaker** — protección ante cuotas agotadas
+- **Reintentos** — manejo de errores 429 / RESOURCE_EXHAUSTED
+- **Motor heurístico offline** — objetivos y atajos sin llamar a Gemini cuando el circuit breaker está activo
+- **Caché en memoria** — evita llamadas redundantes a `/api/analyze-context`
+- Puerto **3000**; Vite como middleware en desarrollo
 
-- Autenticación Firebase (Google, email/contraseña).
-- Chat conversacional con el asistente **ColombIA Datos**.
-- Panel de administración (fuentes de datos, configuración Gemini, auditoría).
-- Consulta de datasets en **datos.gov.co** vía API SODA.
-- Gestión de conversaciones, notas y solicitudes de apertura de datos.
-- Renderizado de respuestas en Markdown y visualizaciones embebidas.
+## Frontend — `src/App.tsx`
 
-### `src/components/DataChart.tsx` — Visualizaciones
+Módulos funcionales integrados en el componente principal:
 
-- Gráficos de barras, líneas, torta y tabla de datos.
-- Exportación a CSV.
-- Animaciones con Motion.
-- Normalización de columnas para datos colombianos (formato numérico `$ 1.000.000,00`).
+| Funcionalidad | Descripción |
+|---------------|-------------|
+| Autenticación | Firebase Auth (Google OAuth, email/contraseña) |
+| Chat IA | Consultas en lenguaje natural vía `/api/chat` |
+| Catálogo Nacional | Exploración de fuentes SODA de datos.gov.co |
+| Panel Admin | Gestión de fuentes, configuración Gemini, auditoría, logs |
+| Conversaciones | Historial persistente en Firestore |
+| Notas | Anotaciones sobre respuestas del asistente |
+| Solicitudes de apertura | Ciudadanos piden nuevos datasets |
+| Onboarding | Tour guiado para nuevos usuarios |
+| Visualizaciones | Gráficos embebidos vía `DataChart` |
 
-### `src/types.ts` — Modelo de datos TypeScript
+Branding: logo `/logo_colombia_datos.svg`, icono `ColombIAIcon`, colores institucionales (azul, amarillo, rojo).
 
-Define las interfaces compartidas: `UserData`, `Conversation`, `Message`, `DataSource`, `Dataset`, `VisualizationData`, etc.
+## `DataChart.tsx`
 
-Ver [data_dictionary.md](data_dictionary.md) para la descripción completa.
+- Gráficos: barras, líneas, torta, tabla
+- Exportación CSV
+- Normalización de formatos numéricos colombianos (`$ 1.000.000,00`)
+- Animaciones Motion, vista expandida modal
 
 ## Comandos
 
 ```bash
 cd src
 npm install
-cp .env.example .env.local   # Configurar GEMINI_API_KEY
-npm run dev                  # Desarrollo → http://localhost:3000
-npm run build                # Build producción
-npm start                    # Servidor producción
-npm run lint                 # Verificación TypeScript
+cp .env.example .env
+npm run dev      # http://localhost:3000
+npm run build
+npm start
+npm run lint
 ```
 
 ## Enlaces
 
-- [Stack tecnológico completo](stack_tecnologico.md)
+- [Despliegue local](despliegue_local.md)
+- [Stack tecnológico](stack_tecnologico.md)
 - [Variables de entorno](variables_entorno.md)
-- [Seguridad y Firestore](seguridad.md)
-- [Arquitectura del sistema](architecture.md)
+- [Arquitectura](architecture.md)

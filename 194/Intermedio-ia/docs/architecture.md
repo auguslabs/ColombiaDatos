@@ -2,20 +2,22 @@
 
 ## Visión general
 
-ColombIA Datos es una aplicación **full-stack** que conecta ciudadanos con el catálogo nacional de datos abiertos ([datos.gov.co](https://www.datos.gov.co/)) mediante inteligencia artificial conversacional.
+**ColombIA Datos — Portal de Inteligencia Pública** es una aplicación full-stack para **veeduría ciudadana** que conecta a los ciudadanos con el catálogo nacional de datos abiertos ([datos.gov.co](https://www.datos.gov.co/)) mediante inteligencia artificial conversacional.
 
 ```mermaid
 flowchart TB
     subgraph Frontend["Frontend — React 19 + Vite 6"]
-        UI[Interfaz ciudadana]
+        UI[Portal ciudadano + Catálogo]
+        Logo[logo_colombia_datos.svg]
         Charts[Recharts — visualizaciones]
         MD[React Markdown — reportes IA]
     end
 
     subgraph Backend["Backend — Express + TypeScript"]
         Proxy[Proxy seguro de APIs]
-        GeminiRoute[/api/gemini]
+        ChatRoute[/api/chat]
         AnalyzeRoute[/api/analyze-context]
+        Heuristic[Motor heurístico offline]
     end
 
     subgraph Cloud["Servicios en la nube"]
@@ -30,57 +32,67 @@ flowchart TB
 
     subgraph Analytics["Capa analítica — Python"]
         Raw[data/01_raw]
-        ML[ml/ — limpieza, features, modelos]
+        ML[ml/]
         NB[notebooks/]
     end
 
     UI --> Proxy
-    Proxy --> GeminiRoute
+    Proxy --> ChatRoute
     Proxy --> AnalyzeRoute
-    GeminiRoute --> Gemini
+    ChatRoute --> Gemini
     AnalyzeRoute --> Gemini
+    AnalyzeRoute --> Heuristic
     UI --> Firebase
     UI --> Firestore
-    Proxy --> SODA
+    UI --> SODA
     SODA --> Charts
     Raw --> ML --> NB
 ```
 
 ## Flujo de una consulta ciudadana
 
-1. El ciudadano escribe una pregunta en lenguaje natural en la interfaz React.
-2. El frontend envía la consulta al servidor Express (nunca expone la clave Gemini al navegador).
-3. Express invoca **Gemini** vía `@google/genai` para interpretar la intención y estructurar la respuesta.
-4. El servidor o el cliente consultan datasets en **datos.gov.co** mediante la API **SODA**.
-5. Los resultados se renderizan como texto (Markdown), tablas o gráficos (Recharts).
-6. El historial de conversaciones, notas y configuraciones se persisten en **Firestore**.
+1. El ciudadano accede al portal e inicia sesión (Firebase Auth).
+2. Escribe una pregunta en lenguaje natural en el chat.
+3. El frontend llama a **`POST /api/chat`** en Express (la clave Gemini nunca sale del servidor).
+4. Express invoca **Gemini** (`gemini-3.5-flash` por defecto) con instrucciones del sistema ColombIA Datos.
+5. Paralelamente, **`POST /api/analyze-context`** genera objetivos y chips de atajos (Gemini o motor heurístico offline si hay circuit breaker).
+6. La app consulta datasets en **datos.gov.co** vía API **SODA**.
+7. Resultados: Markdown, tablas o gráficos Recharts (`DataChart`).
+8. Conversaciones, notas y configuraciones se guardan en **Firestore**.
+
+## API del backend
+
+| Endpoint | Body principal | Respuesta |
+|----------|---------------|-----------|
+| `POST /api/chat` | `contents`, `systemInstruction`, `model`, `temperature`, `topP`, `topK` | `{ text }` |
+| `POST /api/analyze-context` | `messages`, `sources` | `{ objective, shortcutChips }` |
 
 ## Componentes del repositorio
 
-| Ruta | Rol | Tecnología |
-|------|-----|------------|
-| `src/` | Aplicación web principal | React, Express, TypeScript, Firebase |
-| `src/server.ts` | Servidor proxy + endpoints Gemini | Node.js, esbuild |
-| `src/src/App.tsx` | UI principal, auth, chat, admin | React 19 |
-| `src/src/components/DataChart.tsx` | Visualizaciones de datos públicos | Recharts, Motion |
-| `ml/` | Limpieza, integración y modelado offline | Python, scikit-learn |
-| `data/` | Ciclo de vida de datasets descargados | CSV / Git LFS |
-| `notebooks/` | EDA y experimentación reproducible | Jupyter |
-| `pipelines/` | Orquestación del flujo analítico | Python |
+| Ruta | Rol |
+|------|-----|
+| `src/server.ts` | Backend Express, Gemini proxy, heurísticas |
+| `src/src/App.tsx` | Portal completo: chat, catálogo, admin |
+| `src/public/` | Branding (favicon, logo) |
+| `src/src/components/DataChart.tsx` | Visualizaciones |
+| `ml/` | Análisis offline Python |
+| `data/` | Ciclo de vida de datasets |
+| `notebooks/` | EDA reproducible |
+| `pipelines/` | Pipeline ML |
 
-## Integración de fuentes de datos
+## Integración de fuentes
 
-| Fuente | Protocolo | Uso en la app |
-|--------|-----------|---------------|
-| datos.gov.co | SODA REST API | Consulta de datasets en tiempo real |
-| Firebase Firestore | SDK Web | Usuarios, conversaciones, fuentes configuradas |
-| Gemini API | REST vía SDK | Análisis de lenguaje natural y generación de respuestas |
+| Fuente | Protocolo | Uso |
+|--------|-----------|-----|
+| datos.gov.co | SODA REST | Consulta en tiempo real |
+| Firebase Firestore | SDK Web | Usuarios, conversaciones, fuentes |
+| Gemini API | SDK `@google/genai` | Chat y análisis contextual |
 
 ## Seguridad
 
-- Las claves de API (Gemini) permanecen **solo en el servidor** (`server.ts`).
-- Reglas de Firestore definidas en `src/firestore.rules` — ver [seguridad.md](seguridad.md).
-- Especificación de amenazas en `src/security_spec.md`.
+- Claves API solo en servidor (`server.ts`)
+- Reglas Firestore: `src/firestore.rules`
+- Especificación de amenazas: `src/security_spec.md`
 
 ## Despliegue
 
@@ -89,4 +101,4 @@ flowchart TB
 | Desarrollo | `cd src && npm run dev` |
 | Producción | `cd src && npm run build && npm start` |
 
-Ver [variables_entorno.md](variables_entorno.md) y [aplicacion_web.md](aplicacion_web.md).
+Ver [despliegue_local.md](despliegue_local.md) y [variables_entorno.md](variables_entorno.md).

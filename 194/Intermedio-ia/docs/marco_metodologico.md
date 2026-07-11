@@ -10,7 +10,7 @@ Aplicación de CRISP-ML al proyecto ColombIA Datos, combinando desarrollo de pro
 | 2. Comprensión de los datos | EDA sobre datasets de datos.gov.co | `notebooks/01_EDA_exploracion_datos.ipynb` |
 | 3. Preparación de datos | Limpieza, tipos, nulos | `ml/data_cleaning.py`, `notebooks/02_limpieza_transformacion.ipynb` |
 | 4. Ingeniería de features | Variables derivadas, NLP básico | `ml/feature_engineering.py` |
-| 5. Modelado | Entrenamiento offline + IA generativa en producción | `ml/model_training.py`, Gemini en `server.ts` |
+| 5. Modelado | Chat IA en producción + ML offline | `server.ts` (`/api/chat`), `ml/model_training.py` |
 | 6. Evaluación | Métricas ML + validación UX del asistente | `ml/model_evaluation.py`, `tests/` |
 | 7. Despliegue | App web + pipeline reproducible | `src/` (web), `pipelines/pipeline_ml.py` |
 
@@ -18,12 +18,13 @@ Aplicación de CRISP-ML al proyecto ColombIA Datos, combinando desarrollo de pro
 
 Paralela al ciclo CRISP-ML, el desarrollo web siguió un enfoque iterativo:
 
-1. **Prototipo en AI Studio** — Validación del concepto conversacional con Gemini.
-2. **Exportación full-stack** — React + Express con proxy seguro de APIs.
-3. **Integración Firebase** — Auth, persistencia y reglas de seguridad.
-4. **Integración SODA** — Conexión en tiempo real con datos.gov.co.
-5. **Visualizaciones** — Recharts para gráficos interactivos.
-6. **Documentación** — Estructura del concurso + stack del arquitecto.
+1. **Prototipo conversacional** — Validación del concepto con Gemini.
+2. **Implementación full-stack** — React + Express, endpoints `/api/chat` y `/api/analyze-context`.
+3. **Branding e identidad** — Logo, favicon y portal de inteligencia pública.
+4. **Integración Firebase** — Auth, persistencia y reglas de seguridad.
+5. **Integración SODA** — Conexión en tiempo real con datos.gov.co.
+6. **Visualizaciones** — Recharts para gráficos interactivos.
+7. **Documentación** — Estructura del concurso + stack del arquitecto.
 
 ## Criterios de éxito
 

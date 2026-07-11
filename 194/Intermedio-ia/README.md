@@ -1,6 +1,6 @@
 # ColombIA Datos — Equipo 194
 
-**Asistente virtual ciudadano** que permite consultar, analizar y visualizar datos abiertos de Colombia mediante lenguaje natural.
+**Portal de Inteligencia Pública** — asistente virtual ciudadano para veeduría y análisis de datos abiertos de Colombia mediante lenguaje natural.
 
 Proyecto Intermedio IA — Concurso Datos al Ecosistema 2026 IA para Colombia.
 
@@ -8,11 +8,11 @@ Proyecto Intermedio IA — Concurso Datos al Ecosistema 2026 IA para Colombia.
 
 | Campo | Detalle |
 |-------|---------|
-| **Nombre** | ColombIA Datos |
+| **Nombre** | ColombIA Datos — Portal de Inteligencia Pública |
 | **Equipo** | 194 |
 | **Nivel** | Intermedio IA |
 | **Problema** | Dificultad ciudadana para acceder, entender y visualizar datos públicos en datos.gov.co |
-| **Solución** | Plataforma web con IA (Gemini) que traduce preguntas en lenguaje natural a consultas sobre datos abiertos, con visualizaciones interactivas |
+| **Solución** | Plataforma web con IA (Gemini) que traduce preguntas en lenguaje natural a consultas SODA, con visualizaciones interactivas y panel de veeduría |
 | **Fuente principal** | [datos.gov.co](https://www.datos.gov.co/) — API SODA |
 | **Licencia** | MIT — ver [LICENSE](LICENSE) |
 
@@ -24,10 +24,11 @@ Proyecto Intermedio IA — Concurso Datos al Ecosistema 2026 IA para Colombia.
 |------|------------|
 | Frontend | React 19, Vite 6, Tailwind CSS v4, Motion, Lucide React, Recharts, React Markdown |
 | Backend | Express (Node.js), TypeScript, esbuild |
-| IA | Google Gen AI SDK (`@google/genai`) — modelos Gemini |
+| IA | Google Gen AI SDK (`@google/genai`) — Gemini (`/api/chat`) |
 | Datos en nube | Firebase Auth + Cloud Firestore |
+| Branding | `public/logo_colombia_datos.svg`, `public/favicon.svg` |
 
-Detalle completo en [docs/aplicacion_web.md](docs/aplicacion_web.md) y [docs/stack_tecnologico.md](docs/stack_tecnologico.md).
+Detalle en [docs/aplicacion_web.md](docs/aplicacion_web.md) y [docs/stack_tecnologico.md](docs/stack_tecnologico.md).
 
 ### Capa analítica (`ml/`, `notebooks/`, `data/`)
 
@@ -41,16 +42,16 @@ Detalle completo en [docs/aplicacion_web.md](docs/aplicacion_web.md) y [docs/sta
 
 ```
 Intermedio-ia/
-├── src/              # Aplicación web full-stack (Google AI Studio)
-├── ml/               # Módulos Python de análisis y ML
-├── docs/             # Documentación técnica para evaluación
-├── data/             # Ciclo de vida de datos (01_raw → 04_model_output)
-├── notebooks/        # Experimentación y EDA
-├── models/           # Artefactos de modelos entrenados
-├── reports/          # Figuras y reporte final
-├── tests/            # Pruebas de calidad e inferencia
-├── pipelines/        # Pipeline ML reproducible
-└── RECURSOS/         # Presentación y material visual
+├── src/              # Portal web full-stack
+│   ├── public/       # Logo y favicon
+│   ├── server.ts     # API /api/chat, /api/analyze-context
+│   └── src/          # React (App.tsx, DataChart)
+├── ml/               # Módulos Python analíticos
+├── docs/             # Documentación técnica
+├── data/             # Ciclo de vida de datos
+├── notebooks/        # EDA y experimentación
+├── tests/            # Pruebas pytest
+└── pipelines/        # Pipeline ML
 ```
 
 ## Instalación y ejecución
@@ -60,14 +61,14 @@ Intermedio-ia/
 ```bash
 cd src
 npm install
-cp .env.example .env.local
-# Configurar GEMINI_API_KEY en .env.local
+cp .env.example .env
+# Configurar GEMINI_API_KEY en .env
 npm run dev
 ```
 
 Abrir `http://localhost:3000`
 
-Ver [docs/variables_entorno.md](docs/variables_entorno.md) para todas las variables.
+Guía completa: [docs/despliegue_local.md](docs/despliegue_local.md)
 
 ### Capa analítica Python
 
@@ -81,14 +82,15 @@ python pipelines/pipeline_ml.py
 
 | Documento | Contenido |
 |-----------|-----------|
+| [docs/despliegue_local.md](docs/despliegue_local.md) | Instalación paso a paso |
 | [docs/planteamiento_problema.md](docs/planteamiento_problema.md) | Problema y objetivos |
-| [docs/architecture.md](docs/architecture.md) | Arquitectura del sistema |
-| [docs/stack_tecnologico.md](docs/stack_tecnologico.md) | Stack completo del arquitecto |
-| [docs/aplicacion_web.md](docs/aplicacion_web.md) | Estructura del código en `src/` |
-| [docs/fuentes_datos.md](docs/fuentes_datos.md) | datos.gov.co y API SODA |
-| [docs/data_dictionary.md](docs/data_dictionary.md) | Entidades y variables |
-| [docs/seguridad.md](docs/seguridad.md) | Firebase, reglas y credenciales |
-| [docs/validación_guide.md](docs/validación_guide.md) | Guía para pares evaluadores |
+| [docs/architecture.md](docs/architecture.md) | Arquitectura y API |
+| [docs/aplicacion_web.md](docs/aplicacion_web.md) | Estructura de `src/` |
+| [docs/stack_tecnologico.md](docs/stack_tecnologico.md) | Stack del arquitecto |
+| [docs/fuentes_datos.md](docs/fuentes_datos.md) | datos.gov.co y SODA |
+| [docs/data_dictionary.md](docs/data_dictionary.md) | Entidades Firestore |
+| [docs/seguridad.md](docs/seguridad.md) | Firebase y credenciales |
+| [docs/validación_guide.md](docs/validación_guide.md) | Guía para evaluadores |
 
 ## Changelog
 

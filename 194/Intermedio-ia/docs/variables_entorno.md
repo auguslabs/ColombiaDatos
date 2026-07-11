@@ -1,69 +1,64 @@
 # Variables de entorno
 
-Configuración necesaria para ejecutar ColombIA Datos en desarrollo y producción.
+Configuración para ejecutar **ColombIA Datos** en desarrollo y producción.
 
 ## Archivo de configuración
 
-Copiar la plantilla antes de ejecutar:
-
 ```bash
 cd src
-cp .env.example .env.local
+cp .env.example .env
 ```
 
-## Variables del servidor (backend)
+También se acepta `.env.local` (Vite lo carga automáticamente).
+
+## Variables del servidor
 
 | Variable | Requerida | Descripción |
 |----------|-----------|-------------|
-| `GEMINI_API_KEY` | **Sí** | Clave de la API de Google Gemini. Solo se usa en `server.ts`, nunca en el cliente. |
+| `GEMINI_API_KEY` | **Sí** | Clave API Gemini. Solo en `server.ts`, nunca en el cliente. |
+| `DISABLE_HMR` | No | `true` desactiva hot reload de Vite |
 
-Obtener en: [Google AI Studio](https://aistudio.google.com/apikey)
+Obtener clave: [Google AI — API Keys](https://ai.google.dev/gemini-api/docs/api-key)
 
-## Variables del cliente (Firebase — prefijo `VITE_`)
+## Variables Firebase (prefijo `VITE_`)
 
 | Variable | Requerida | Descripción |
 |----------|-----------|-------------|
-| `VITE_FIREBASE_API_KEY` | No* | API Key de Firebase |
-| `VITE_FIREBASE_AUTH_DOMAIN` | No* | Dominio de autenticación |
-| `VITE_FIREBASE_PROJECT_ID` | No* | ID del proyecto Firebase |
-| `VITE_FIREBASE_STORAGE_BUCKET` | No* | Bucket de almacenamiento |
+| `VITE_FIREBASE_API_KEY` | No* | API Key Firebase |
+| `VITE_FIREBASE_AUTH_DOMAIN` | No* | Dominio auth |
+| `VITE_FIREBASE_PROJECT_ID` | No* | ID del proyecto |
+| `VITE_FIREBASE_STORAGE_BUCKET` | No* | Storage bucket |
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | No* | Sender ID |
 | `VITE_FIREBASE_APP_ID` | No* | App ID |
-| `VITE_FIREBASE_MEASUREMENT_ID` | No* | Google Analytics (opcional) |
-| `VITE_FIREBASE_DATABASE_ID` | No* | ID de base Firestore |
+| `VITE_FIREBASE_MEASUREMENT_ID` | No* | Analytics (opcional) |
+| `VITE_FIREBASE_DATABASE_ID` | No* | ID Firestore (si no es la predeterminada) |
 
-\* En desarrollo local, si se dejan vacías, la app usa las credenciales del sandbox de AI Studio (`firebase-applet-config.json`).
+\* Si se dejan vacías, la app usa `firebase-config.json`.
 
-## Ejemplo `.env.local`
+## Ejemplo `.env`
 
 ```env
 GEMINI_API_KEY=AIzaSy...
 
-# Producción / QA — descomentar y completar
+# Opcional — proyecto Firebase propio
 # VITE_FIREBASE_API_KEY=
-# VITE_FIREBASE_AUTH_DOMAIN=
 # VITE_FIREBASE_PROJECT_ID=
-# VITE_FIREBASE_STORAGE_BUCKET=
-# VITE_FIREBASE_MESSAGING_SENDER_ID=
-# VITE_FIREBASE_APP_ID=
-# VITE_FIREBASE_MEASUREMENT_ID=
 # VITE_FIREBASE_DATABASE_ID=
 ```
 
-## Token SODA (datos.gov.co)
+## Token SODA
 
-No es variable de entorno por defecto. Se configura desde el **panel de administración** de la app (`sodaDefaultAppToken`) o por fuente de datos individual.
+Configurado desde el panel admin de la app (`sodaDefaultAppToken`) o por fuente individual.
 
 ## Seguridad
 
-- **Nunca** commitear `.env.local` ni archivos con claves reales.
-- El `.gitignore` excluye `.env` y `.env.*`.
-- Las variables `VITE_*` son visibles en el bundle del cliente — solo usar para config pública de Firebase (diseñado para eso).
+- No commitear `.env` ni `.env.local`
+- Variables `VITE_*` son públicas en el bundle del cliente
 
 ## Verificación
 
 ```bash
 cd src
 npm run dev
-# Si GEMINI_API_KEY falta, el servidor responderá error 500 en /api/gemini
+# Sin GEMINI_API_KEY → error 500 en POST /api/chat
 ```

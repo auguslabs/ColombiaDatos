@@ -50,7 +50,7 @@ import {
   serverTimestamp,
   getDocFromServer
 } from 'firebase/firestore';
-import firebaseConfig from '../firebase-applet-config.json';
+import firebaseConfig from '../firebase-config.json';
 import { 
   Search, 
   Database, 
@@ -106,7 +106,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-// Dynamically build the Firebase config using Vite environment variables or fallback to the local AI Studio sandbox config
+// Configuración Firebase: variables VITE_* o valores por defecto en firebase-config.json
 const apiKey = (import.meta as any).env.VITE_FIREBASE_API_KEY || firebaseConfig.apiKey;
 const authDomain = (import.meta as any).env.VITE_FIREBASE_AUTH_DOMAIN || firebaseConfig.authDomain;
 const projectId = (import.meta as any).env.VITE_FIREBASE_PROJECT_ID || firebaseConfig.projectId;
@@ -329,7 +329,7 @@ const ColombIAIcon = ({ isProcessing, size = "md", className = "" }: { isProcess
       >
         {!imgError ? (
           <img 
-            src="/logo_colombia_datos.png" 
+            src="/logo_colombia_datos.svg" 
             alt="ColombIA" 
             className="w-full h-full object-cover"
             onError={() => setImgError(true)}
