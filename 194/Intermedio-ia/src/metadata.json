@@ -1,0 +1,6 @@
+{
+  "name": "ColombIA Datos",
+  "description": "Asistente virtual ciudadano que permite consultar, analizar y visualizar datos abiertos de Colombia mediante lenguaje natural.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

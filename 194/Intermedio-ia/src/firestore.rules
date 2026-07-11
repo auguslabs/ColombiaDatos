@@ -1,0 +1,194 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      // Look up admin status in users collection
+      return isSignedIn() && 
+             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' || 
+              request.auth.token.email == 'carlosernesto.rios@gmail.com');
+    }
+
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      function isValidUser(data) {
+        let isBootstrapAdmin = request.auth.token.email == 'carlosernesto.rios@gmail.com';
+        let allowedRoles = isBootstrapAdmin ? ['public', 'admin'] : ['public'];
+        
+        return data.uid == request.auth.uid &&
+               data.email is string && data.email.size() <= 200 &&
+               data.role in allowedRoles &&
+               (data.displayName == null || (data.displayName is string && data.displayName.size() <= 200)) &&
+               (data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 50000)) &&
+               (data.status == null || data.status in ['active', 'suspended']) &&
+               data.createdAt == request.time;
+      }
+
+      allow list: if isAdmin();
+      allow get: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      // Admins can update any field (such as role or status), whereas owners can only update displayName or photoURL
+      allow update: if (isAdmin() && 
+                       incoming().role in ['public', 'admin'] && 
+                       (incoming().status == null || incoming().status in ['active', 'suspended'])) || 
+                      (isOwner(userId) && 
+                       incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL']) &&
+                       (incoming().displayName == null || (incoming().displayName is string && incoming().displayName.size() <= 200)) &&
+                       (incoming().photoURL == null || (incoming().photoURL is string && incoming().photoURL.size() <= 50000)));
+      allow delete: if isAdmin(); // Admins can delete users
+    }
+
+    // 2. Conversations Collection
+    match /conversations/{conversationId} {
+      function isValidConversation(data) {
+        return data.userId == request.auth.uid &&
+               data.title is string && data.title.size() <= 200 &&
+               data.createdAt == request.time &&
+               data.updatedAt == request.time;
+      }
+
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      
+      allow create: if isSignedIn() && isValidConversation(incoming());
+      
+      allow update: if isSignedIn() && 
+                      isOwner(existing().userId) && 
+                      incoming().diff(existing()).affectedKeys().hasOnly(['title', 'updatedAt']) &&
+                      incoming().title is string && incoming().title.size() <= 200 &&
+                      incoming().updatedAt == request.time;
+      
+      allow delete: if isSignedIn() && (isOwner(existing().userId) || isAdmin());
+
+      // Subcollection: Messages
+      match /messages/{messageId} {
+        function isValidMessage(data) {
+          return data.conversationId == conversationId &&
+                 data.userId == request.auth.uid &&
+                 data.role in ['user', 'assistant'] &&
+                 data.content is string && data.content.size() <= 20000 &&
+                 data.createdAt == request.time;
+        }
+
+        allow list: if isSignedIn() && (
+          resource.data.userId == request.auth.uid || 
+          (!('userId' in resource.data) && get(/databases/$(database)/documents/conversations/$(conversationId)).data.userId == request.auth.uid)
+        );
+        allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+        
+        allow create: if isSignedIn() && 
+                        get(/databases/$(database)/documents/conversations/$(conversationId)).data.userId == request.auth.uid && 
+                        isValidMessage(incoming());
+        
+        allow update, delete: if false;
+      }
+    }
+
+    // 4. DataSources
+    match /dataSources/{sourceId} {
+      function isValidDataSource(data) {
+        return data.name is string && data.name.size() <= 100 &&
+               data.url is string && data.url.size() <= 500 &&
+               data.isActive is bool;
+      }
+
+      allow read: if isSignedIn();
+      allow write: if isAdmin() && isValidDataSource(incoming());
+    }
+
+    // 5. Data Opening Requests
+    match /dataOpeningRequests/{requestId} {
+      function isValidRequest(data) {
+        return data.userId == request.auth.uid &&
+               data.datasetName is string && data.datasetName.size() <= 200 &&
+               data.createdAt == request.time;
+      }
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidRequest(incoming());
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // 6. Notes Collection
+    match /notes/{noteId} {
+      function isValidNote(data) {
+        return data.userId == request.auth.uid &&
+               data.messageId is string && data.messageId.size() <= 128 &&
+               data.content is string && data.content.size() <= 10000 &&
+               (data.messageContext == null || (data.messageContext is string && data.messageContext.size() <= 20000)) &&
+               (data.conversationId == null || (data.conversationId is string && data.conversationId.size() <= 128)) &&
+               (data.conversationTitle == null || (data.conversationTitle is string && data.conversationTitle.size() <= 500)) &&
+               data.updatedAt == request.time;
+      }
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidNote(incoming());
+      allow update: if isSignedIn() && isOwner(existing().userId) && 
+                      isValidNote(incoming()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['content', 'updatedAt', 'messageContext', 'conversationId', 'conversationTitle']);
+      allow delete: if isSignedIn() && (isOwner(existing().userId) || isAdmin());
+    }
+
+    // 7. App Settings
+    match /appSettings/{settingId} {
+      function isValidSetting(data) {
+        return data.id == settingId &&
+               (data.model == null || (data.model is string && data.model.size() <= 100)) &&
+               (data.temperature == null || (data.temperature is number)) &&
+               (data.topP == null || (data.topP is number)) &&
+               (data.topK == null || (data.topK is number)) &&
+               (data.customSystemInstruction == null || (data.customSystemInstruction is string && data.customSystemInstruction.size() <= 10000)) &&
+               (data.welcomeMessage == null || (data.welcomeMessage is string && data.welcomeMessage.size() <= 5000)) &&
+               (data.rateLimitMessages == null || (data.rateLimitMessages is number)) &&
+               (data.sodaDefaultAppToken == null || (data.sodaDefaultAppToken is string && data.sodaDefaultAppToken.size() <= 200));
+      }
+
+      allow read: if isSignedIn();
+      allow write: if isAdmin() && isValidSetting(incoming());
+    }
+
+    // 8. App Errors
+    match /appErrors/{errorId} {
+      function isValidError(data) {
+        return data.id == errorId &&
+               data.error is string && data.error.size() <= 10000 &&
+               data.createdAt == request.time;
+      }
+      allow list, get, delete: if isAdmin();
+      allow create: if isSignedIn() && isValidError(incoming());
+      allow update: if false;
+    }
+
+    // 9. Audit Logs
+    match /auditLogs/{logId} {
+      function isValidAudit(data) {
+        return data.id == logId &&
+               data.action is string && data.action.size() <= 200 &&
+               data.details is string && data.details.size() <= 10000 &&
+               data.createdAt == request.time;
+      }
+      allow list, get, delete: if isAdmin();
+      allow create: if isAdmin() && isValidAudit(incoming());
+      allow update: if false;
+    }
+  }
+}

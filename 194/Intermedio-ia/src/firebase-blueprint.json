@@ -1,0 +1,181 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Public and private profile data for users.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["public", "admin"] },
+        "status": { "type": "string", "enum": ["active", "suspended"] },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Chat session between user and AI.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "createdAt", "updatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Individual message in a conversation.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "conversationId": { "type": "string" },
+        "userId": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "assistant"] },
+        "content": { "type": "string" },
+        "thinking": { "type": "array", "items": { "type": "string" } },
+        "visualization": { "type": "object" },
+        "datasets": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversationId", "userId", "role", "content", "createdAt"]
+    },
+    "DataSource": {
+      "title": "Data Source",
+      "description": "Configurable Socrata or other API sources.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "url": { "type": "string" },
+        "entity": { "type": "string" },
+        "category": { "type": "string" },
+        "appToken": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "description": { "type": "string" }
+      },
+      "required": ["id", "name", "url", "isActive"]
+    },
+    "DataOpeningRequest": {
+      "title": "Data Opening Request",
+      "description": "User request for a specific dataset to be opened.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "datasetName": { "type": "string" },
+        "reason": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "reviewed", "closed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "datasetName", "createdAt"]
+    },
+    "Note": {
+      "title": "Research Note",
+      "description": "User notes/decisions on specific chat responses.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "messageId": { "type": "string" },
+        "userId": { "type": "string" },
+        "content": { "type": "string" },
+        "messageContext": { "type": "string", "description": "The text of the message being noted for context in global views." },
+        "conversationId": { "type": "string" },
+        "conversationTitle": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "messageId", "userId", "content", "updatedAt"]
+    },
+    "AppError": {
+      "title": "App Execution Error",
+      "description": "Log of runtime errors, chart/query execution exceptions, and API failures.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "error": { "type": "string" },
+        "stack": { "type": "string" },
+        "context": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "error", "createdAt"]
+    },
+    "AuditLog": {
+      "title": "Admin Audit Log",
+      "description": "Logs changes to platform parameters, configurations, user roles, user status, and SODA sources.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "action", "details", "userEmail", "createdAt"]
+    },
+    "AppSetting": {
+      "title": "App Settings",
+      "description": "Global application configuration parameters for SODA, Gemini AI prompts, and welcome limits.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "model": { "type": "string" },
+        "temperature": { "type": "number" },
+        "topP": { "type": "number" },
+        "topK": { "type": "number" },
+        "customSystemInstruction": { "type": "string" },
+        "welcomeMessage": { "type": "string" },
+        "rateLimitMessages": { "type": "number" },
+        "sodaDefaultAppToken": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/conversations/{conversationId}": {
+      "schema": "Conversation",
+      "description": "User conversations"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Messages within a conversation"
+    },
+    "/dataSources/{sourceId}": {
+      "schema": "DataSource",
+      "description": "Global data sources managed by admin"
+    },
+    "/dataOpeningRequests/{requestId}": {
+      "schema": "DataOpeningRequest",
+      "description": "Requests for new datasets"
+    },
+    "/notes/{noteId}": {
+      "schema": "Note",
+      "description": "User research notes"
+    },
+    "/appSettings/{settingId}": {
+      "schema": "AppSetting",
+      "description": "Global settings editable by admins"
+    },
+    "/appErrors/{errorId}": {
+      "schema": "AppError",
+      "description": "Runtime exception and API error tracking logs"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Administration security audit logs for configurations and settings"
+    }
+  }
+}
